@@ -52,8 +52,8 @@ gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 img_g1 = gammaCorrection(gray, 0.5)
 img_g2 = gammaCorrection(gray, 2)
 cv2.imwrite('gray.png', gray)
-cv2.imwrite('data_g0.5.png', img_g1*255)
-cv2.imwrite('data_g2.png', img_g2*255)
+cv2.imwrite('data_g0.5.png', img_g1*255)    # img_g1*255: Modify the range from 0-1 to 0-255
+cv2.imwrite('data_g2.png', img_g2*255)      # img_g2*255: Modify the range from 0-1 to 0-255
 
 # Use matplotlib to display multiple images
 plt.figure(1)
