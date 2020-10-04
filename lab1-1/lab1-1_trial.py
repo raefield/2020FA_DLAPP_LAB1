@@ -75,7 +75,7 @@ def resize(img, size):
     return img_t
 '''
 
-
+# Bilinear-interpolation Ref. : https://stackoverflow.com/questions/26142288/resize-an-image-with-bilinear-interpolation-without-imresize/26143655
 
 
 class MotionDetect(object):
