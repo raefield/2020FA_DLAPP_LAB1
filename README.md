@@ -2,6 +2,7 @@
 
 ## 1-1 Get into OpenCV
  - RGB & HSV (10%)
+
     (1) Split the color image to Red/Green/Blue image
 
     (2) Convert the RGB image to HSV image and show each channel
@@ -18,6 +19,7 @@
 
 ## 1-2 Enhancement
  - Gamma Correction (10%) [Done!]
+ 
     (1) Get 1 image from data.mp4
 
     (2) Enhance the contrast of both bright part and dark part with different gamma
