@@ -1,7 +1,7 @@
 # DLAPP_LAB1
 
 ## 1-1 Get into OpenCV
- - **RGB & HSV (10%)**
+ - **RGB & HSV (10%) [Done!]** 
    
    Read the *data.png* and do: 
 
