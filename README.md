@@ -24,7 +24,7 @@
      * *Hint*:
         - Average all frames to simulate the scene without moving object
         - Motion = Image - Avg_map
-        - Avg_map = Avg_map * alpha + Image * (1-alpha)
+        - Avg_map = Avg_map * alpha + Image * (1 - alpha)
 
 
 
