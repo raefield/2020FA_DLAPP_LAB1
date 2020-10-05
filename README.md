@@ -16,9 +16,8 @@
 
 
 
-
-## 1-2 Enhancement
- - Gamma Correction (10%) [Done!]
+## 1-2 Enhancement [Done!]
+ - Gamma Correction (10%)
  
     (1) Get 1 image from data.mp4
 
@@ -26,6 +25,9 @@
 
  - Histogram Equalization (20%)
 
+    (1) Read the hist.png, try to implement Histogram Equalization and show the result image and histogram
+
+    (2) Compare with cv2.equalizeHist()
 
 
 
