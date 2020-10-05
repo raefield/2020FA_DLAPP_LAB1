@@ -2,6 +2,7 @@
 
 ## 1-1 Get into OpenCV
  - **RGB & HSV (10%)**
+   
    Read the *data.png* and do: 
 
     (1) Split the color image to Red/Green/Blue image
@@ -9,6 +10,7 @@
     (2) Convert the RGB image to HSV image and show each channel
 
  - **Interpolation (10%)**
+   
    Implement a resize function that resize the *data.png* to **2x bigger** and **2x smaller** using *Bilinear Interpolation*.
 
      - Compare *cv2.resize()* and your *resize()* function
