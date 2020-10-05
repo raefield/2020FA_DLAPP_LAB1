@@ -178,9 +178,9 @@ plt.title('V_map.png', fontsize=12)
 plt.xticks([])
 plt.yticks([])
 
-
-
 plt.show()
+
+
 
 
 
@@ -206,6 +206,30 @@ img_small_cv = cv2.resize(img, (width//2, height//2))
 #cv2.imwrite('data_0.5x.png', img_small)
 cv2.imwrite('data_2x_cv.png', img_big_cv)
 cv2.imwrite('data_0.5x_cv.png', img_small_cv)
+'''
+# Use matplotlib to display multiple images
+plt.figure(2, figsize=(18, 8))
+
+plt.subplot(2,2,1)
+plt.imshow(img_big_cv)
+plt.title('data_2x_cv.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,2,3)
+plt.imshow(img)
+plt.title('img.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,2,4)
+plt.imshow(img_small_cv)
+plt.title('data_0.5x_cv.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.show()
+'''
 
 
 
