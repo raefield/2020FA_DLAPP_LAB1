@@ -28,10 +28,6 @@ def splitHSV(img):
     G_map = cv2.merge([zeros, G, zeros])
     R_map = cv2.merge([zeros, zeros, R])
 
-    #H_map = cv2.merge([H, zeros, zeros])
-    #S_map = cv2.merge([zeros, S, zeros])
-    #V_map = cv2.merge([zeros, zeros, V])
-
     H_map = cv2.cvtColor(B_map, cv2.COLOR_BGR2HSV)
     S_map = cv2.cvtColor(G_map, cv2.COLOR_BGR2HSV)
     V_map = cv2.cvtColor(R_map, cv2.COLOR_BGR2HSV)
@@ -40,44 +36,57 @@ def splitHSV(img):
 
 
 
-'''
+# Bilinear-interpolation Ref. : https://stackoverflow.com/questions/26142288/resize-an-image-with-bilinear-interpolation-without-imresize/26143655
+#                               https://eng.aurelienpierre.com/2020/03/bilinear-interpolation-on-images-stored-as-python-numpy-ndarray/
+
 def resize(img, size):
-    # TODO
-    # Ref.: https://chao-ji.github.io/jekyll/update/2018/07/19/BilinearResize.html
 
-    img_height, img_width, img_channel = img.shape
-    height = size * img_height
-    width = size * img_width
+    height_in, width_in, img_channel_in = img.shape
+    height_out = int(size * height_in)
+    width_out = int(size * width_in)  
+    img_t = np.zeros((height_out, width_out, 3), np.uint8)
 
-    img_t = np.empty([height, width])
-
-    x_ratio = float(img_width - 1) / (width - 1) if width > 1 else 0
-    y_ratio = float(img_height - 1) / (height - 1) if height > 1 else 0
-
-    for i in range(height):
-        for j in range(width):
-
-            x_l, y_l = math.floor(x_ratio * j), math.floor(y_ratio * i)
-            x_h, y_h = math.ceil(x_ratio * j), math.ceil(y_ratio * i)
-
-            x_weight = (x_ratio * j) - x_l
-            y_weight = (y_ratio * i) - y_l
-
-            a = img[y_l, x_l]
-            b = img[y_l, x_h]
-            c = img[y_h, x_l]
-            d = img[y_h, x_h]
-
-            pixel = a * (1 - x_weight) * (1 - y_weight) + b * x_weight * (1 - y_weight) + c * y_weight * (1 - x_weight) + d * x_weight * y_weight
-
-            img_t[i][j] = pixel
+    for i in range(height_out):
+        for j in range(width_out):
+            # Relative coordinates of the pixel in output space
+            x_out = j // width_out
+            y_out = i // height_out
+ 
+            # Corresponding absolute coordinates of the pixel in input space
+            x_in = x_out * width_in
+            y_in = y_out * height_in
+ 
+            # Nearest neighbours coordinates in input space
+            x_prev = int(np.floor(x_in))
+            x_next = x_prev + 1
+            y_prev = int(np.floor(y_in))
+            y_next = y_prev + 1
+ 
+            # Sanitize bounds - no need to check for < 0
+            #x_prev = min(x_prev, width_in - 1)
+            #x_next = min(x_next, width_in - 1)
+            #y_prev = min(y_prev, height_in - 1)
+            #y_next = min(y_next, height_in - 1)
+            
+            # Distances between neighbour nodes in input space
+            Dy_next = y_next - y_in
+            Dy_prev = 1 - Dy_next # because next - prev = 1
+            Dx_next = x_next - x_in
+            Dx_prev = 1 - Dx_next # because next - prev = 1
+            
+            # Interpolate over 3 RGB layers
+            for c in range(3):
+                img_t[i][j][c] = Dy_prev * (img[y_next][x_prev][c] * Dx_next + img[y_next][x_next][c] * Dx_prev) \
+                + Dy_next * (img[y_prev][x_prev][c] * Dx_next + img[y_prev][x_next][c] * Dx_prev)
 
     return img_t
+
+
+
+
+
+
 '''
-
-# Bilinear-interpolation Ref. : https://stackoverflow.com/questions/26142288/resize-an-image-with-bilinear-interpolation-without-imresize/26143655
-
-
 class MotionDetect(object):
     """docstring for MotionDetect"""
     def __init__(self, shape):
@@ -103,7 +112,7 @@ class MotionDetect(object):
         # TODO
 
         return motion_map
-
+'''
 
 
 # ------------------ #
@@ -139,20 +148,20 @@ else:
     print("Faild to read {}.".format(name))
 
 height, width, channel = img.shape
-#img_big = resize(img, 2)
-#img_small = resize(img, 0.5)
+img_big = resize(img, 2)
+img_small = resize(img, 0.5)
 img_big_cv = cv2.resize(img, (width*2, height*2))
 img_small_cv = cv2.resize(img, (width//2, height//2))
 
-#cv2.imwrite('data_2x.png', img_big)
-#cv2.imwrite('data_0.5x.png', img_small)
+cv2.imwrite('data_2x.png', img_big)
+cv2.imwrite('data_0.5x.png', img_small)
 cv2.imwrite('data_2x_cv.png', img_big_cv)
 cv2.imwrite('data_0.5x_cv.png', img_small_cv)
 
 
 
 
-
+'''
 # ------------------ #
 #  Video Read/Write  #
 # ------------------ #
@@ -187,4 +196,4 @@ while True:
 cap.release()
 out.release()
 
-
+'''

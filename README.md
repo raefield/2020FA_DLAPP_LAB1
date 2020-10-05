@@ -2,16 +2,27 @@
 
 ## 1-1 Get into OpenCV
  - **RGB & HSV (10%)**
+   Read the *data.png* and do: 
 
     (1) Split the color image to Red/Green/Blue image
 
     (2) Convert the RGB image to HSV image and show each channel
 
  - **Interpolation (10%)**
+   Implement a resize function that resize the *data.png* to **2x bigger** and **2x smaller** using *Bilinear Interpolation*.
 
-
+     - Compare *cv2.resize()* and your *resize()* function
 
  - **Video Read/Write (10%)**
+
+    (1) Read the *data.mp4*, try to get the moving objects in the video
+
+    (2) Write the new video *output.avi* that only have moving objects
+
+     * *Hint*:
+        - Average all frames to simulate the scene without moving object
+        - Motion = Image - Avg_map
+        - Avg_map = Avg_map * alpha + Image * (1-alpha)
 
 
 
