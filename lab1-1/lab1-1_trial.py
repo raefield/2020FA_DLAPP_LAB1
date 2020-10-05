@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+import matplotlib.pyplot as plt
 
 def splitRGB(img):
     # TODO
@@ -9,28 +10,22 @@ def splitRGB(img):
 
     zeros = np.zeros(img.shape[:2], dtype = "uint8")
 
-    B_map = cv2.merge([B, zeros, zeros])
-    G_map = cv2.merge([zeros, G, zeros])
-    R_map = cv2.merge([zeros, zeros, R])
+    #B_map = cv2.merge([B, zeros, zeros])
+    #G_map = cv2.merge([zeros, G, zeros])
+    #R_map = cv2.merge([zeros, zeros, R])
 
-    return R_map, G_map, B_map
+    B_map = cv2.merge([zeros, zeros, B])
+    G_map = cv2.merge([zeros, G, zeros])
+    R_map = cv2.merge([R, zeros, zeros])
+
+    return B_map, G_map, R_map
 
 
 def splitHSV(img):
     # TODO
-    (B, G, R) = cv2.split(img)  # color sequence in opencv: B, G, R
-    #(H, S, V) = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    #(H_map, S_map, V_map) = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
-    zeros = np.zeros(img.shape[:2], dtype = "uint8")
-
-    B_map = cv2.merge([B, zeros, zeros])
-    G_map = cv2.merge([zeros, G, zeros])
-    R_map = cv2.merge([zeros, zeros, R])
-
-    H_map = cv2.cvtColor(B_map, cv2.COLOR_BGR2HSV)
-    S_map = cv2.cvtColor(G_map, cv2.COLOR_BGR2HSV)
-    V_map = cv2.cvtColor(R_map, cv2.COLOR_BGR2HSV)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    (H_map, S_map, V_map) = cv2.split(img_hsv)
 
     return H_map, S_map, V_map
 
@@ -86,7 +81,7 @@ def resize(img, size):
 
 
 
-'''
+
 class MotionDetect(object):
     """docstring for MotionDetect"""
     def __init__(self, shape):
@@ -102,6 +97,11 @@ class MotionDetect(object):
     def getMotion(self, img):
         assert img.shape == self.shape, "Input image shape must be {}, but get {}".format(self.shape, img.shape)
 
+        # Hint:
+        # Average all frames to simulate the scene without moving object
+        #  – Motion = Image - Avg_map
+        #  – Avg_map = Avg_map*alpha + Image*(1-alpha)
+
         # Extract motion part (hint: motion part mask = difference between image and avg > threshold)
         # TODO
 
@@ -111,8 +111,9 @@ class MotionDetect(object):
         # Update avg_map
         # TODO
 
-        return motion_map
-'''
+        #return motion_map
+        return 
+
 
 
 # ------------------ #
@@ -125,16 +126,64 @@ if img is not None:
 else:
     print("Faild to read {}.".format(name))
 
-R_map, G_map, B_map = splitRGB(img)
+B_map, G_map, R_map = splitRGB(img)
 H_map, S_map, V_map = splitHSV(img)
 
-cv2.imwrite('data_R.png', R_map)
+cv2.imwrite('data_B.png', R_map)
 cv2.imwrite('data_G.png', G_map)
-cv2.imwrite('data_B.png', B_map)
+cv2.imwrite('data_R.png', B_map)
 
 cv2.imwrite('data_H.png', H_map)
 cv2.imwrite('data_S.png', S_map)
 cv2.imwrite('data_V.png', V_map)
+
+# Use matplotlib to display multiple images
+plt.figure(1, figsize=(18, 8))
+
+plt.subplot(2,3,1)
+plt.imshow(R_map)
+plt.title('R_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,3,2)
+plt.imshow(G_map)
+plt.title('G_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,3,3)
+plt.imshow(B_map)
+plt.title('B_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+
+
+plt.subplot(2,3,4)
+plt.imshow(H_map, cmap='gray')
+plt.title('H_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,3,5)
+plt.imshow(S_map, cmap='gray')
+plt.title('S_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+plt.subplot(2,3,6)
+plt.imshow(V_map, cmap='gray')
+plt.title('V_map.png', fontsize=12)
+plt.xticks([])
+plt.yticks([])
+
+
+
+plt.show()
+
+
+
 
 
 # ------------------ #
@@ -148,20 +197,20 @@ else:
     print("Faild to read {}.".format(name))
 
 height, width, channel = img.shape
-img_big = resize(img, 2)
-img_small = resize(img, 0.5)
+#img_big = resize(img, 2)
+#img_small = resize(img, 0.5)
 img_big_cv = cv2.resize(img, (width*2, height*2))
 img_small_cv = cv2.resize(img, (width//2, height//2))
 
-cv2.imwrite('data_2x.png', img_big)
-cv2.imwrite('data_0.5x.png', img_small)
+#cv2.imwrite('data_2x.png', img_big)
+#cv2.imwrite('data_0.5x.png', img_small)
 cv2.imwrite('data_2x_cv.png', img_big_cv)
 cv2.imwrite('data_0.5x_cv.png', img_small_cv)
 
 
 
 
-'''
+
 # ------------------ #
 #  Video Read/Write  #
 # ------------------ #
@@ -196,4 +245,4 @@ while True:
 cap.release()
 out.release()
 
-'''
+
