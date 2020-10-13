@@ -10,10 +10,6 @@ def splitRGB(img):
 
     zeros = np.zeros(img.shape[:2], dtype = "uint8")
 
-    #B_map = cv2.merge([B, zeros, zeros])
-    #G_map = cv2.merge([zeros, G, zeros])
-    #R_map = cv2.merge([zeros, zeros, R])
-
     B_map = cv2.merge([zeros, zeros, B])
     G_map = cv2.merge([zeros, G, zeros])
     R_map = cv2.merge([R, zeros, zeros])
@@ -31,8 +27,7 @@ def splitHSV(img):
 
 
 
-# Bilinear-interpolation Ref. : https://stackoverflow.com/questions/26142288/resize-an-image-with-bilinear-interpolation-without-imresize/26143655
-#                               https://eng.aurelienpierre.com/2020/03/bilinear-interpolation-on-images-stored-as-python-numpy-ndarray/
+# Bilinear-interpolation Ref. : https://eng.aurelienpierre.com/2020/03/bilinear-interpolation-on-images-stored-as-python-numpy-ndarray/
 
 def resize(img, size):
 
@@ -44,8 +39,8 @@ def resize(img, size):
     for i in range(height_out):
         for j in range(width_out):
             # Relative coordinates of the pixel in output space
-            x_out = j // width_out
-            y_out = i // height_out
+            x_out = j / width_out
+            y_out = i / height_out
  
             # Corresponding absolute coordinates of the pixel in input space
             x_in = x_out * width_in
@@ -58,10 +53,10 @@ def resize(img, size):
             y_next = y_prev + 1
  
             # Sanitize bounds - no need to check for < 0
-            #x_prev = min(x_prev, width_in - 1)
-            #x_next = min(x_next, width_in - 1)
-            #y_prev = min(y_prev, height_in - 1)
-            #y_next = min(y_next, height_in - 1)
+            x_prev = min(x_prev, width_in - 1)
+            x_next = min(x_next, width_in - 1)
+            y_prev = min(y_prev, height_in - 1)
+            y_next = min(y_next, height_in - 1)
             
             # Distances between neighbour nodes in input space
             Dy_next = y_next - y_in
@@ -89,9 +84,11 @@ class MotionDetect(object):
 
         self.shape = shape
         self.avg_map = np.zeros((self.shape[0], self.shape[1]), dtype='float')
-        self.alpha = 0.8 # you can ajust your value
-        self.threshold = 40 # you can ajust your value
-
+        self.alpha = 0.8 # you can adjust your value
+        self.threshold = 100 # you can adjust your value
+        
+        self.counter = 0
+        self.Avg_frame = 0
         print("MotionDetect init with shape {}".format(self.shape))
 
     def getMotion(self, img):
@@ -102,17 +99,59 @@ class MotionDetect(object):
         #  – Motion = Image - Avg_map
         #  – Avg_map = Avg_map*alpha + Image*(1-alpha)
 
+        counter = self.counter + 1
+        Avg_frame = self.Avg_frame
+        avg_map = self.avg_map
+        print ('----------------------------------------------------->  Start counter = ', counter)
+        #Avg_frame = self.avg_map
+
+        while (counter != 0):
         # Extract motion part (hint: motion part mask = difference between image and avg > threshold)
         # TODO
+            #(B_map, G_map, R_map) = cv2.split(img)
+            img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            print ('img_gray = ')
+            print (img_gray)
 
-        # Mask out unmotion part (hint: set the unmotion part to 0 with mask)
-        # TODO
+            Avg_frame_update = cv2.mean(img_gray)[0]
+
+            Avg_frame = int((Avg_frame_update + Avg_frame * counter) / (counter + 1))
+            avg_height, avg_width, avg_channel = img.shape
+            print ('--------------------->  Accumulate count = ', counter)
+            print (Avg_frame)
+            
+            avg_map = np.full((avg_height, avg_width), Avg_frame, dtype=np.uint8) 
+            #avg_map = np.ones((avg_height, avg_width)) * Avg_frame
+            print ('avg_map = ')
+            print (avg_map)
+            
+            diff = np.full((avg_height, avg_width), 0, dtype=np.uint8) 
+            #diff = abs(img_gray - avg_map)
+            diff = cv2.subtract(img_gray, avg_map, dst=None, mask=None, dtype=None)
+            for i in range(avg_height):
+                for j in range(avg_width):
+
+                    if (diff[i][j] > self.threshold):
+                        diff[i][j] = 1
+                    else:
+                        diff[i][j] = 0
+            
+            print ('diff = ')
+            print (diff)
+
+
+            # Mask out unmotion part (hint: set the unmotion part to 0 with mask)
+             # TODO
+            motion_map = img_gray * diff
+            print ('motion_map = ')
+            print (motion_map)
 
         # Update avg_map
         # TODO
 
-        #return motion_map
-        return 
+            counter = counter +1
+
+            return motion_map
 
 
 
@@ -136,7 +175,7 @@ cv2.imwrite('data_R.png', B_map)
 cv2.imwrite('data_H.png', H_map)
 cv2.imwrite('data_S.png', S_map)
 cv2.imwrite('data_V.png', V_map)
-
+'''
 # Use matplotlib to display multiple images
 plt.figure(1, figsize=(18, 8))
 
@@ -177,13 +216,7 @@ plt.imshow(V_map, cmap='gray')
 plt.title('V_map.png', fontsize=12)
 plt.xticks([])
 plt.yticks([])
-
-plt.show()
-
-
-
-
-
+'''
 
 
 # ------------------ #
@@ -206,30 +239,27 @@ img_small_cv = cv2.resize(img, (width//2, height//2))
 #cv2.imwrite('data_0.5x.png', img_small)
 cv2.imwrite('data_2x_cv.png', img_big_cv)
 cv2.imwrite('data_0.5x_cv.png', img_small_cv)
+
+
 '''
-# Use matplotlib to display multiple images
-plt.figure(2, figsize=(18, 8))
+fig2, ax = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.5), dpi=180, sharex=True, sharey=True)
+ax[2].imshow(img_small)
+ax[2].set_title('data_2x.png', fontsize=12)
+ax[1].imshow(img)
+ax[1].set_title('original.png', fontsize=12)
+ax[0].imshow(img_big)
+ax[0].set_title('data_0.5x.png', fontsize=12)
 
-plt.subplot(2,2,1)
-plt.imshow(img_big_cv)
-plt.title('data_2x_cv.png', fontsize=12)
-plt.xticks([])
-plt.yticks([])
-
-plt.subplot(2,2,3)
-plt.imshow(img)
-plt.title('img.png', fontsize=12)
-plt.xticks([])
-plt.yticks([])
-
-plt.subplot(2,2,4)
-plt.imshow(img_small_cv)
-plt.title('data_0.5x_cv.png', fontsize=12)
-plt.xticks([])
-plt.yticks([])
-
-plt.show()
+fig3_cv, ax = plt.subplots(nrows=1, ncols=3, figsize=(9, 2.5), dpi=180, sharex=True, sharey=True)
+ax[2].imshow(img_small_cv)
+ax[2].set_title('data_2x_cv.png', fontsize=12)
+ax[1].imshow(img)
+ax[1].set_title('original.png', fontsize=12)
+ax[0].imshow(img_big_cv)
+ax[0].set_title('data_0.5x_cv.png', fontsize=12)
 '''
+#plt.show()
+
 
 
 
@@ -238,7 +268,8 @@ plt.show()
 # ------------------ #
 #  Video Read/Write  #
 # ------------------ #
-name = "../data.mp4"
+#name = "../data.mp4"
+name = "../data_cut.mp4"
 # Input reader
 cap = cv2.VideoCapture(name)
 fps = cap.get(cv2.CAP_PROP_FPS)
@@ -259,7 +290,7 @@ while True:
 
     if success:
         motion_map = mt.getMotion(frame)
-
+        #plt.imshow(motion_map)
         # Write 1 frame to output video
         out.write(motion_map)
     else:

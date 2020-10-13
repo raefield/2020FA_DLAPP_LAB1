@@ -1,7 +1,7 @@
 # DLAPP_LAB1
 
 ## 1-1 Get into OpenCV
- - **RGB & HSV (10%) [Done!]** 
+ - **RGB & HSV (10%)** 
    
    Read the *data.png* and do: 
 
@@ -28,7 +28,26 @@
 
 
 
-## 1-2 Enhancement [Done!]
+
+      Extract motion part (hint: motion part mask = difference between image and avg > threshold)
+        # TODO
+            mask = diff - avg > threshold
+
+
+      Mask out unmotion part (hint: set the unmotion part to 0 with mask)
+        # TODO
+            unmotion = img_gray * mask
+
+      Update avg_map
+            Avg_map = Avg_map * alpha + Image * (1 - alpha)
+
+        # TODO
+
+
+
+
+
+## 1-2 Enhancement 
  - **Gamma Correction (10%)**
  
     (1) Get 1 image from *data.mp4*
@@ -43,7 +62,7 @@
 
 
 
-## 1-3 Mask Processing [Done!]
+## 1-3 Mask Processing 
  - **Denoise (20%)**
      - Gaussian noise & Salt and Paper noise
      - Average filters & Medium filters
