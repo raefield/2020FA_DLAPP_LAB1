@@ -29,8 +29,8 @@ def edgeSharpen(img):
     img_edge = cv2.filter2D(img, dst=-1, ddepth=-1, kernel=Laplacian_kernel, anchor=(-1,-1), delta=0, borderType=cv2.BORDER_DEFAULT)
 
     # Sharpening
-    #img_s = cv2.filter2D(img, dst=-1, ddepth=-1, kernel=Sharpen_kernel, anchor=(-1,-1), delta=0, borderType=cv2.BORDER_DEFAULT)
-    img_s = cv2.addWeighted(img, 1, img_edge, -0.5, 0)
+    #img_s = cv2.addWeighted(img, 1, img_edge, -0.5, 0)
+    img_s = cv2.subtract(img, img_edge, dst=None, mask=None, dtype=None)
 
     # boundaries: 0 ~ 255 
     img_s[img_s > 255] = 255
