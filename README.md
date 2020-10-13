@@ -28,25 +28,6 @@
 
 
 
-
-      Extract motion part (hint: motion part mask = difference between image and avg > threshold)
-        # TODO
-            mask = diff - avg > threshold
-
-
-      Mask out unmotion part (hint: set the unmotion part to 0 with mask)
-        # TODO
-            unmotion = img_gray * mask
-
-      Update avg_map
-            Avg_map = Avg_map * alpha + Image * (1 - alpha)
-
-        # TODO
-
-
-
-
-
 ## 1-2 Enhancement 
  - **Gamma Correction (10%)**
  
